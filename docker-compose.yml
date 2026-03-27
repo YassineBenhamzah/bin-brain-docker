@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: binbrain
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+  laravel:
+    build: ./laravel
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: binbrain
+      DB_USERNAME: laravel
+      DB_PASSWORD: secret
+    volumes:
+      - documents:/var/documents
+    depends_on:
+      - mysql
+
+  ocr:
+    build: ./ocr
+    ports:
+      - "3001:3000"
+    volumes:
+      - documents:/var/documents
+
+  nextjs:
+    build: ./nextjs
+    ports:
+      - "3003:3000"
+    depends_on:
+      - laravel
+
+volumes:
+  mysql_data:
+  documents:
