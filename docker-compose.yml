@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
@@ -24,6 +22,7 @@ services:
       DB_PASSWORD: secret
     volumes:
       - documents:/var/documents
+      - ./laravel:/var/www
     depends_on:
       - mysql
 
@@ -33,11 +32,19 @@ services:
       - "3001:3000"
     volumes:
       - documents:/var/documents
+      - ./ocr:/app
+      - /app/node_modules
+    command: npx -y nodemon -L index.js
 
   nextjs:
     build: ./nextjs
     ports:
       - "3003:3000"
+    volumes:
+      - ./nextjs:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
     depends_on:
       - laravel
 
