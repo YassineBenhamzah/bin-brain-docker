@@ -26,6 +26,22 @@ services:
     depends_on:
       - mysql
 
+  # --- NEW: BACKGROUND QUEUE WORKER ---
+  worker:
+    build: ./laravel
+    command: php artisan queue:work
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: binbrain
+      DB_USERNAME: laravel
+      DB_PASSWORD: secret
+    volumes:
+      - documents:/var/documents
+      - ./laravel:/var/www
+    depends_on:
+      - mysql
+      - laravel
+
   ocr:
     build: ./ocr
     ports:
